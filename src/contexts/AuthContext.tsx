@@ -6,7 +6,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (phone: string, password: string) => Promise<boolean>;
   logout: () => void;
-  updateUser: (updates: Partial<Pick<User, 'name' | 'department'>>) => void;
+  updateUser: (updates: Partial<Pick<User, 'name' | 'department' | 'phone'>>) => void;
   changePassword: (oldPassword: string, newPassword: string) => boolean;
 }
 
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  const updateUser = useCallback((updates: Partial<Pick<User, 'name' | 'department'>>) => {
+  const updateUser = useCallback((updates: Partial<Pick<User, 'name' | 'department' | 'phone'>>) => {
     setUser(prev => {
       if (!prev) return prev;
       const updated = { ...prev, ...updates };
@@ -71,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (mu) {
         if (updates.name) mu.name = updates.name;
         if (updates.department) mu.department = updates.department;
+        if (updates.phone) mu.phone = updates.phone;
       }
       return updated;
     });
