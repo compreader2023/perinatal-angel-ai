@@ -8,7 +8,8 @@ import {
   LogOut,
   Activity,
   Brain,
-  Shield
+  Shield,
+  UserCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -48,7 +49,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-sidebar text-sidebar-foreground flex flex-col">
+    <aside className="w-64 min-h-screen bg-sidebar text-sidebar-foreground flex flex-col relative">
       {/* Logo Area */}
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
@@ -84,14 +85,14 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* User Info */}
-      <div className="p-4 border-t border-sidebar-border">
+      {/* User Info - fixed at bottom */}
+      <div className="sticky bottom-0 p-4 border-t border-sidebar-border bg-sidebar">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-full bg-sidebar-accent flex items-center justify-center">
             <span className="text-sm font-medium">{user?.name.charAt(0)}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.name}</p>
+            <Link to="/profile" className="text-sm font-medium truncate hover:underline cursor-pointer block">{user?.name}</Link>
             <div className="flex items-center gap-1.5">
               <Shield className="w-3 h-3 text-sidebar-foreground/60" />
               <p className="text-xs text-sidebar-foreground/60">

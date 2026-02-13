@@ -6,11 +6,13 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (phone: string, password: string) => Promise<boolean>;
   logout: () => void;
+  updateUser: (updates: Partial<Pick<User, 'name' | 'department'>>) => void;
+  changePassword: (oldPassword: string, newPassword: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users for demo
+// Mock users for demo - stored as mutable for password changes
 const mockUsers: (User & { password: string })[] = [
   {
     id: '1',
@@ -60,8 +62,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const updateUser = useCallback((updates: Partial<Pick<User, 'name' | 'department'>>) => {
+    setUser(prev => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...updates };
+      // Also update mockUsers
+      const mu = mockUsers.find(u => u.id === prev.id);
+      if (mu) {
+        if (updates.name) mu.name = updates.name;
+        if (updates.department) mu.department = updates.department;
+      }
+      return updated;
+    });
+  }, []);
+
+  const changePassword = useCallback((oldPassword: string, newPassword: string): boolean => {
+    if (!user) return false;
+    const mu = mockUsers.find(u => u.id === user.id);
+    if (!mu || mu.password !== oldPassword) return false;
+    mu.password = newPassword;
+    return true;
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, updateUser, changePassword }}>
       {children}
     </AuthContext.Provider>
   );
