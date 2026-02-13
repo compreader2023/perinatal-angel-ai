@@ -64,13 +64,12 @@ export function CreatePatientDialog({ open, onOpenChange, onPatientCreated }: Cr
       id: Date.now().toString(),
       name,
       admissionNumber,
-      expectedDueDate: '2024-03-01', // Would be fetched from EMR
+      expectedDueDate: '2024-03-01',
       admissionDate: new Date().toISOString().split('T')[0],
-      age: 28,
       gestationalWeeks: 38,
       currentRisk: 'low',
       currentProbability: 30,
-      emrStatus: 'connected',
+      emrStatus: 'disconnected',
       riskHistory: [],
       medicalRecords: [],
     };

@@ -79,10 +79,6 @@ export function PatientDetailDialog({ patient, open, onOpenChange }: PatientDeta
                 <h4 className="text-sm font-medium text-muted-foreground mb-3">基本信息</h4>
                 <dl className="space-y-2">
                   <div className="flex justify-between">
-                    <dt className="text-sm text-muted-foreground">年龄</dt>
-                    <dd className="text-sm font-medium">{patient.age}岁</dd>
-                  </div>
-                  <div className="flex justify-between">
                     <dt className="text-sm text-muted-foreground">孕周</dt>
                     <dd className="text-sm font-medium">{patient.gestationalWeeks}周</dd>
                   </div>

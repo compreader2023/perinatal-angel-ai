@@ -31,11 +31,11 @@ import { Plus, Search, Pencil, Trash2, Shield, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 const initialUsers: User[] = [
-  { id: '1', name: '张管理员', email: 'admin@hospital.com', role: 'admin', department: '系统管理' },
-  { id: '2', name: '李医生', email: 'doctor@hospital.com', role: 'doctor', department: '产科' },
-  { id: '3', name: '王护士', email: 'nurse@hospital.com', role: 'nurse', department: '产科' },
-  { id: '4', name: '刘医生', email: 'liu.doctor@hospital.com', role: 'doctor', department: '产科' },
-  { id: '5', name: '陈护士', email: 'chen.nurse@hospital.com', role: 'nurse', department: '产科' },
+  { id: '1', name: '张管理员', phone: '13111112222', role: 'admin', department: '系统管理' },
+  { id: '2', name: '李医生', phone: '15155556666', role: 'doctor', department: '产科' },
+  { id: '3', name: '王护士', phone: '18188889999', role: 'nurse', department: '产科' },
+  { id: '4', name: '刘医生', phone: '13900001111', role: 'doctor', department: '产科' },
+  { id: '5', name: '陈护士', phone: '13900002222', role: 'nurse', department: '产科' },
 ];
 
 export default function UserManagement() {
@@ -47,14 +47,15 @@ export default function UserManagement() {
   
   // Form state
   const [formName, setFormName] = useState('');
-  const [formEmail, setFormEmail] = useState('');
+  const [formPhone, setFormPhone] = useState('');
+  const [formPassword, setFormPassword] = useState('');
   const [formRole, setFormRole] = useState<UserRole>('nurse');
   const [formDepartment, setFormDepartment] = useState('产科');
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
+      user.phone.includes(searchQuery);
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
     return matchesSearch && matchesRole;
   });
@@ -75,13 +76,15 @@ export default function UserManagement() {
     if (user) {
       setEditingUser(user);
       setFormName(user.name);
-      setFormEmail(user.email);
+      setFormPhone(user.phone);
+      setFormPassword('');
       setFormRole(user.role);
       setFormDepartment(user.department || '产科');
     } else {
       setEditingUser(null);
       setFormName('');
-      setFormEmail('');
+      setFormPhone('');
+      setFormPassword('');
       setFormRole('nurse');
       setFormDepartment('产科');
     }
@@ -94,25 +97,27 @@ export default function UserManagement() {
   };
 
   const handleSubmit = () => {
-    if (!formName.trim() || !formEmail.trim()) {
+    if (!formName.trim() || !formPhone.trim()) {
       toast.error('请填写完整信息');
+      return;
+    }
+    if (!editingUser && !formPassword.trim()) {
+      toast.error('请输入密码');
       return;
     }
 
     if (editingUser) {
-      // Update existing user
       setUsers(prev => prev.map(u => 
         u.id === editingUser.id 
-          ? { ...u, name: formName, email: formEmail, role: formRole, department: formDepartment }
+          ? { ...u, name: formName, phone: formPhone, role: formRole, department: formDepartment }
           : u
       ));
       toast.success('用户信息已更新');
     } else {
-      // Create new user
       const newUser: User = {
         id: Date.now().toString(),
         name: formName,
-        email: formEmail,
+        phone: formPhone,
         role: formRole,
         department: formDepartment,
       };
@@ -198,7 +203,7 @@ export default function UserManagement() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="搜索用户名或邮箱..."
+                placeholder="搜索用户名或手机号..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -224,7 +229,7 @@ export default function UserManagement() {
             <TableHeader>
               <TableRow className="data-table-header">
                 <TableHead>姓名</TableHead>
-                <TableHead>邮箱</TableHead>
+                <TableHead>手机号</TableHead>
                 <TableHead>角色</TableHead>
                 <TableHead>科室</TableHead>
                 <TableHead className="text-right">操作</TableHead>
@@ -250,7 +255,7 @@ export default function UserManagement() {
                         {user.name}
                       </div>
                     </TableCell>
-                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.phone}</TableCell>
                     <TableCell>
                       <Badge variant={roleBadgeVariants[user.role]}>
                         {roleLabels[user.role]}
@@ -302,12 +307,21 @@ export default function UserManagement() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>邮箱</Label>
+                <Label>手机号</Label>
                 <Input
-                  type="email"
-                  value={formEmail}
-                  onChange={(e) => setFormEmail(e.target.value)}
-                  placeholder="请输入邮箱地址"
+                  type="tel"
+                  value={formPhone}
+                  onChange={(e) => setFormPhone(e.target.value)}
+                  placeholder="请输入手机号"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>密码{editingUser && '（留空则不修改）'}</Label>
+                <Input
+                  type="password"
+                  value={formPassword}
+                  onChange={(e) => setFormPassword(e.target.value)}
+                  placeholder={editingUser ? '留空则不修改密码' : '请输入密码'}
                 />
               </div>
               <div className="space-y-2">

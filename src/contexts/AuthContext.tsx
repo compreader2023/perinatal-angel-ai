@@ -4,7 +4,7 @@ import { User, UserRole } from '@/types/patient';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (phone: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -15,7 +15,7 @@ const mockUsers: (User & { password: string })[] = [
   {
     id: '1',
     name: '张管理员',
-    email: 'admin@hospital.com',
+    phone: '13111112222',
     password: 'admin123',
     role: 'admin',
     department: '系统管理',
@@ -23,7 +23,7 @@ const mockUsers: (User & { password: string })[] = [
   {
     id: '2',
     name: '李医生',
-    email: 'doctor@hospital.com',
+    phone: '15155556666',
     password: 'doctor123',
     role: 'doctor',
     department: '产科',
@@ -32,7 +32,7 @@ const mockUsers: (User & { password: string })[] = [
   {
     id: '3',
     name: '王护士',
-    email: 'nurse@hospital.com',
+    phone: '18188889999',
     password: 'nurse123',
     role: 'nurse',
     department: '产科',
@@ -43,11 +43,11 @@ const mockUsers: (User & { password: string })[] = [
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
+  const login = useCallback(async (phone: string, password: string): Promise<boolean> => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    const foundUser = mockUsers.find(u => u.email === email && u.password === password);
+    const foundUser = mockUsers.find(u => u.phone === phone && u.password === password);
     if (foundUser) {
       const { password: _, ...userWithoutPassword } = foundUser;
       setUser(userWithoutPassword);
