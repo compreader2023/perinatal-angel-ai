@@ -149,6 +149,17 @@ export default function Login() {
                     '登录'
                   )}
                 </Button>
+
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full text-sm text-muted-foreground"
+                  onClick={() => {
+                    toast.info('请联系管理员重置密码，管理员手机号：13111112222');
+                  }}
+                >
+                  忘记密码？
+                </Button>
               </form>
 
               {/* Demo Accounts */}

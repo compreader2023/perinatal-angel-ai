@@ -68,14 +68,8 @@ export default function Dashboard() {
   const [pageSize, setPageSize] = useState(10);
   const [jumpPage, setJumpPage] = useState('');
 
-  // Filter patients based on user role
-  const accessiblePatients = useMemo(() => {
-    if (user?.role === 'admin') return patients;
-    if (user?.assignedPatients) {
-      return patients.filter(p => user.assignedPatients?.includes(p.id));
-    }
-    return patients;
-  }, [patients, user]);
+  // All roles see the same patient list
+  const accessiblePatients = patients;
 
   // Apply search and risk filters, then sort
   const filteredPatients = useMemo(() => {
