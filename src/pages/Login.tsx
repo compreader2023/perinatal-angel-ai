@@ -9,7 +9,7 @@ import { Brain, Loader2, AlertCircle, Shield, Heart, Activity } from 'lucide-rea
 import { toast } from 'sonner';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,12 +23,12 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const success = await login(email, password);
+      const success = await login(phone, password);
       if (success) {
         toast.success('登录成功');
         navigate('/dashboard');
       } else {
-        setError('邮箱或密码错误');
+        setError('手机号或密码错误');
       }
     } catch (err) {
       setError('登录失败，请稍后重试');
@@ -38,9 +38,9 @@ export default function Login() {
   };
 
   const demoAccounts = [
-    { role: '管理员', email: 'admin@hospital.com', password: 'admin123' },
-    { role: '医生', email: 'doctor@hospital.com', password: 'doctor123' },
-    { role: '护士', email: 'nurse@hospital.com', password: 'nurse123' },
+    { role: '管理员', phone: '13111112222', password: 'admin123' },
+    { role: '医生', phone: '15155556666', password: 'doctor123' },
+    { role: '护士', phone: '18188889999', password: 'nurse123' },
   ];
 
   return (
@@ -114,15 +114,15 @@ export default function Login() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">邮箱</Label>
+                  <Label htmlFor="phone">手机号</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="name@hospital.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="phone"
+                    type="tel"
+                    placeholder="请输入手机号"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     required
-                    autoComplete="email"
+                    autoComplete="tel"
                   />
                 </div>
 
@@ -159,16 +159,16 @@ export default function Login() {
                 <div className="space-y-2">
                   {demoAccounts.map((account) => (
                     <button
-                      key={account.email}
+                      key={account.phone}
                       type="button"
                       onClick={() => {
-                        setEmail(account.email);
+                        setPhone(account.phone);
                         setPassword(account.password);
                       }}
                       className="w-full p-2 text-left text-xs rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
                     >
                       <span className="font-medium">{account.role}</span>
-                      <span className="text-muted-foreground ml-2">{account.email}</span>
+                      <span className="text-muted-foreground ml-2">{account.phone}</span>
                     </button>
                   ))}
                 </div>

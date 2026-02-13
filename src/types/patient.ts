@@ -4,6 +4,9 @@ export type ConnectionStatus = 'connected' | 'error' | 'pending' | 'disconnected
 
 export type UserRole = 'admin' | 'doctor' | 'nurse';
 
+// Patient processing status for uploaded records
+export type PatientStatus = 'ready' | 'extracting' | 'analyzing';
+
 export interface RiskHistory {
   date: string;
   level: RiskLevel;
@@ -27,19 +30,19 @@ export interface Patient {
   admissionNumber: string;
   expectedDueDate: string;
   admissionDate: string;
-  age: number;
   gestationalWeeks: number;
   currentRisk: RiskLevel;
   currentProbability: number;
   emrStatus: ConnectionStatus;
   riskHistory: RiskHistory[];
   medicalRecords: MedicalRecord[];
+  status?: PatientStatus;
 }
 
 export interface User {
   id: string;
   name: string;
-  email: string;
+  phone: string;
   role: UserRole;
   department?: string;
   assignedPatients?: string[];
@@ -50,7 +53,6 @@ export interface ManualDetectionData {
   // 基本信息
   name: string;
   admissionNumber: string;
-  age: number;
   
   // 常规数据
   complications: string;
