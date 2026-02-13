@@ -87,12 +87,12 @@ export function Sidebar() {
 
       {/* User Info - fixed at bottom */}
       <div className="sticky bottom-0 p-4 border-t border-sidebar-border bg-sidebar">
-        <div className="flex items-center gap-3 mb-3">
+        <Link to="/profile" className="flex items-center gap-3 mb-3 rounded-lg px-2 py-2 -mx-2 hover:bg-sidebar-accent transition-colors cursor-pointer">
           <div className="w-10 h-10 rounded-full bg-sidebar-accent flex items-center justify-center">
             <span className="text-sm font-medium">{user?.name.charAt(0)}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <Link to="/profile" className="text-sm font-medium truncate hover:underline cursor-pointer block">{user?.name}</Link>
+            <span className="text-sm font-medium truncate block">{user?.name}</span>
             <div className="flex items-center gap-1.5">
               <Shield className="w-3 h-3 text-sidebar-foreground/60" />
               <p className="text-xs text-sidebar-foreground/60">
@@ -100,7 +100,7 @@ export function Sidebar() {
               </p>
             </div>
           </div>
-        </div>
+        </Link>
         <Button
           variant="ghost"
           size="sm"

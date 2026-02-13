@@ -4,10 +4,10 @@ import { Sidebar } from '@/components/Sidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { UserCircle, Lock, Phone, AlertCircle } from 'lucide-react';
+import { UserCircle, Lock, Pencil, AlertCircle } from 'lucide-react';
 
 const ADMIN_PHONE = '13111112222';
 
@@ -16,8 +16,10 @@ export default function Profile() {
 
   const [name, setName] = useState(user?.name || '');
   const [department, setDepartment] = useState(user?.department || '');
+  const [phone, setPhone] = useState(user?.phone || '');
 
-  // Password change
+  // Password dialog
+  const [pwDialogOpen, setPwDialogOpen] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,12 +30,21 @@ export default function Profile() {
     nurse: '护士',
   };
 
+  const isAdmin = user?.role === 'admin';
+
   const handleSaveInfo = () => {
     if (!name.trim()) {
       toast.error('姓名不能为空');
       return;
     }
-    updateUser({ name: name.trim(), department: department.trim() });
+    const updates: Partial<Pick<import('@/types/patient').User, 'name' | 'department' | 'phone'>> = {
+      name: name.trim(),
+      department: department.trim(),
+    };
+    if (isAdmin) {
+      updates.phone = phone.trim();
+    }
+    updateUser(updates);
     toast.success('个人信息已更新');
   };
 
@@ -46,12 +57,12 @@ export default function Profile() {
       toast.error('请输入新密码');
       return;
     }
-    if (newPassword !== confirmPassword) {
-      toast.error('两次输入的新密码不一致');
-      return;
-    }
     if (newPassword.length < 6) {
       toast.error('新密码长度不能少于6位');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('两次输入的新密码不一致');
       return;
     }
     const success = changePassword(oldPassword, newPassword);
@@ -60,6 +71,7 @@ export default function Profile() {
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      setPwDialogOpen(false);
     } else {
       toast.error('原始密码错误');
     }
@@ -90,11 +102,17 @@ export default function Profile() {
               </div>
               <div className="space-y-2">
                 <Label>手机号</Label>
-                <Input value={user?.phone || ''} disabled />
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  如需修改手机号，请联系管理员（手机号：{ADMIN_PHONE}）
-                </p>
+                {isAdmin ? (
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="请输入手机号" />
+                ) : (
+                  <>
+                    <Input value={user?.phone || ''} disabled />
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      如需修改手机号，请联系管理员（手机号：{ADMIN_PHONE}）
+                    </p>
+                  </>
+                )}
               </div>
               <div className="space-y-2">
                 <Label>角色</Label>
@@ -108,33 +126,56 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          {/* Change Password */}
+          {/* Password */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lock className="w-5 h-5" />
-                修改密码
+                登录密码
               </CardTitle>
-              <CardDescription>修改密码后需要重新登录</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>原始密码</Label>
-                <Input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} placeholder="请输入原始密码" />
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label>当前密码</Label>
+                  <p className="text-sm tracking-widest">••••••</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setPwDialogOpen(true)}>
+                  <Pencil className="w-4 h-4 mr-1" />
+                  修改密码
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label>新密码</Label>
-                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="请输入新密码（至少6位）" />
-              </div>
-              <div className="space-y-2">
-                <Label>确认新密码</Label>
-                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="请再次输入新密码" />
-              </div>
-              <Button onClick={handleChangePassword}>修改密码</Button>
             </CardContent>
           </Card>
         </div>
       </main>
+
+      {/* Change Password Dialog */}
+      <Dialog open={pwDialogOpen} onOpenChange={setPwDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>修改密码</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>原始密码</Label>
+              <Input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} placeholder="请输入原始密码" />
+            </div>
+            <div className="space-y-2">
+              <Label>新密码</Label>
+              <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="请输入新密码（至少6位）" />
+            </div>
+            <div className="space-y-2">
+              <Label>确认新密码</Label>
+              <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="请再次输入新密码" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPwDialogOpen(false)}>取消</Button>
+            <Button onClick={handleChangePassword}>确认修改</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
